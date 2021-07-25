@@ -13,7 +13,7 @@ func NewGroup(width, height, max int, config Config) (group *Group) {
 	var particles Particles
 
 	for i := 0; i < max; i++ {
-		particles = append(particles, NewParticle(uint32(i), config))
+		particles = append(particles, NewParticle(i, config))
 	}
 
 	group = &Group{
@@ -34,7 +34,11 @@ func (g *Group) Move() {
 			dist := particle.Distance(particle2)
 			size := particle.Size + particle2.Size
 
-			if particle.Config.Bounce && dist <= size {
+			if dist > particle.Area || dist > particle2.Area {
+				continue
+			}
+
+			if particle.Config.Bounce && dist < size {
 				particle.Reverse()
 				particle2.Reverse()
 			}

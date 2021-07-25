@@ -8,7 +8,7 @@ import (
 	"github.com/mvrilo/go-particles/particles"
 )
 
-// Canvas struct holds the Javascript objects needed for the Canvas creation
+// Canvas element and data
 type Canvas struct {
 	done chan struct{}
 
@@ -56,8 +56,8 @@ func (c *Canvas) Render() {
 	render = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		go func() {
 			c.reqID = c.window.Call("requestAnimationFrame", render)
-			c.Clear()
 			c.group.Move()
+			c.Clear()
 			c.Draw()
 		}()
 		return nil
@@ -69,9 +69,26 @@ func (c *Canvas) Render() {
 // Draw draws elements in the canvas
 func (c *Canvas) Draw() {
 	for _, particle := range c.group.Particles {
-		// println(fmt.Sprintf("%+v\n", particle))
 		c.DrawParticle(particle)
+
+		for _, p2 := range c.group.Particles {
+			if particle.Distance(p2) <= particle.Area {
+				c.DrawConnection(particle, p2)
+			}
+		}
 	}
+}
+
+// DrawConnection draws a line between two vectors
+func (c *Canvas) DrawConnection(p1, p2 *particles.Particle) {
+	c.ctx.Set("strokeStyle", p1.Color)
+	c.ctx.Set("lineWidth", 1)
+	c.ctx.Call("beginPath")
+	c.ctx.Call("moveTo", p1.Position[0], p1.Position[1])
+	c.ctx.Call("lineTo", p2.Position[0], p2.Position[1])
+	c.ctx.Call("stroke")
+	c.ctx.Call("closePath")
+
 }
 
 // DrawParticle draws elements in the canvas

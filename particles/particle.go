@@ -6,7 +6,7 @@ type Particles []*Particle
 // Particle represents a single particle
 type Particle struct {
 	Config
-	ID        uint32
+	ID        int
 	Position  Vector
 	Direction Vector
 }
@@ -24,7 +24,7 @@ type Config struct {
 var DefaultConfig = Config{2.0, 40.0, 2.0, "blue", true}
 
 // NewParticle initializes a new particle
-func NewParticle(id uint32, config Config) *Particle {
+func NewParticle(id int, config Config) *Particle {
 	return &Particle{
 		ID:        id,
 		Config:    config,
