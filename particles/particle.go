@@ -21,18 +21,29 @@ type Config struct {
 }
 
 // DefaultConfig is a default value for config
-var DefaultConfig = Config{2.0, 40.0, 2.0, "blue", true}
+var DefaultConfig = Config{2.0, 80.0, 1.8, "#0000FF", true}
 
 // NewParticle initializes a new particle
 func NewParticle(id int, config Config) *Particle {
 	return &Particle{
-		ID:        id,
-		Config:    config,
-		Direction: randVector(-100, 100),
+		ID:     id,
+		Config: config,
+		Direction: Vector{
+			randf(-100, 100) / 100.0,
+			randf(-100, 100) / 100.0,
+		},
 	}
 }
 
-// Bounce bounces particles when too close
+// RandomizePosition sets a random (within a given range) position for the particle
+func (p *Particle) RandomizePosition(width, height int) {
+	p.Position = Vector{
+		randf(0, width),
+		randf(0, height),
+	}
+}
+
+// Reverse makes particles go the other way
 func (p *Particle) Reverse() {
 	p.Direction[0] = -p.Direction[0]
 	p.Direction[1] = -p.Direction[1]
@@ -41,16 +52,6 @@ func (p *Particle) Reverse() {
 // Distance returns the distance between two particles
 func (p *Particle) Distance(pa *Particle) float64 {
 	return p.Position.Distance(pa.Position)
-}
-
-// Nearby returns a list of particles within its area
-func (p *Particle) Nearby(particles Particles) (last Particles) {
-	for _, particle := range particles {
-		if p.Distance(particle) < p.Area {
-			last = append(last, p)
-		}
-	}
-	return
 }
 
 // Move moves a particle

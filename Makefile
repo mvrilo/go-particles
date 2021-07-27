@@ -1,10 +1,16 @@
 .PHONY: dev run build clean staticcheck fmt pre
 
 dev:
-	go run github.com/cespare/reflex -s -r '\.go$$' make clean pre run
+	go run github.com/cespare/reflex -s -r '\.go$$' make clean pre run-dev
+
+run-dev: build-dev
+	./particles-demo-dev
 
 run: build
 	./particles-demo
+
+build-dev: pre
+	go build -race -o particles-demo-dev cmd/particles-demo/main.go
 
 build: pre
 	go build -o particles-demo cmd/particles-demo/main.go
@@ -26,4 +32,4 @@ fmt:
 pre: fmt static/particles.wasm
 
 clean:
-	rm -rf static/particles.wasm static/wasm_exec.js
+	rm -rf particles-demo particles-demo-dev static/particles.wasm static/wasm_exec.js

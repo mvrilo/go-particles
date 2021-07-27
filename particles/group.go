@@ -13,7 +13,9 @@ func NewGroup(width, height, max int, config Config) (group *Group) {
 	var particles Particles
 
 	for i := 0; i < max; i++ {
-		particles = append(particles, NewParticle(i, config))
+		particle := NewParticle(i, config)
+		particle.RandomizePosition(width, height)
+		particles = append(particles, particle)
 	}
 
 	group = &Group{
