@@ -1,5 +1,19 @@
 package particles
 
+// Config contains data for particles configuration
+type Config struct {
+	Speed  float64
+	Area   float64
+	Size   float64
+	Color  string
+	Bounds bool
+	Bounce bool
+	Move   bool
+}
+
+// DefaultConfig is a default value for config
+var DefaultConfig = Config{2.0, 80.0, 1.8, "#ccccFF", true, true, true}
+
 // Particles is a list of particles
 type Particles []*Particle
 
@@ -10,18 +24,6 @@ type Particle struct {
 	Position  Vector
 	Direction Vector
 }
-
-// Config contains data for particles configuration
-type Config struct {
-	Speed  float64
-	Area   float64
-	Size   float64
-	Color  string
-	Bounce bool
-}
-
-// DefaultConfig is a default value for config
-var DefaultConfig = Config{2.0, 80.0, 1.8, "#0000FF", true}
 
 // NewParticle initializes a new particle
 func NewParticle(id int, config Config) *Particle {
@@ -43,10 +45,20 @@ func (p *Particle) RandomizePosition(width, height int) {
 	}
 }
 
+// ReverseX makes particles go the other way
+func (p *Particle) ReverseX() {
+	p.Direction[0] = -p.Direction[0]
+}
+
+// ReverseY makes particles go the other way
+func (p *Particle) ReverseY() {
+	p.Direction[1] = -p.Direction[1]
+}
+
 // Reverse makes particles go the other way
 func (p *Particle) Reverse() {
-	p.Direction[0] = -p.Direction[0]
-	p.Direction[1] = -p.Direction[1]
+	p.ReverseX()
+	p.ReverseY()
 }
 
 // Distance returns the distance between two particles
@@ -58,6 +70,16 @@ func (p *Particle) Distance(pa *Particle) float64 {
 func (p *Particle) Move() {
 	p.Position[0] += (p.Direction[0] * p.Speed)
 	p.Position[1] += (p.Direction[1] * p.Speed)
+}
+
+// Bounce bounces a particle
+func (p *Particle) Bounce(maxx, maxy float64) {
+	if p.Position[0] > maxx || p.Position[0] < 0.0 {
+		p.ReverseX()
+	}
+	if p.Position[1] > maxy || p.Position[1] < 0.0 {
+		p.ReverseY()
+	}
 }
 
 // Bounds checks if a particle is within bounds

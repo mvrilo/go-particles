@@ -26,10 +26,10 @@ staticcheck:
 
 fmt:
 	go mod tidy
-	go fmt ./particles/... ./cmd/...
-	# go vet ./particles/... ./cmd/...
+	go fmt ./...
+	go vet ./particles ./cmd/...
 
-pre: fmt static/particles.wasm
+pre: static/particles.wasm fmt
 
 clean:
 	rm -rf particles-demo particles-demo-dev static/particles.wasm static/wasm_exec.js

@@ -30,22 +30,31 @@ func NewGroup(width, height, max int, config Config) (group *Group) {
 // Move moves particles
 func (g *Group) Move() {
 	for _, particle := range g.Particles {
+		if !particle.Config.Move {
+			continue
+		}
+
 		particle.Move()
 
 		for _, particle2 := range g.Particles {
 			dist := particle.Distance(particle2)
-			size := particle.Size + particle2.Size
-
-			if dist > particle.Area || dist > particle2.Area {
+			if dist > particle.Area {
 				continue
 			}
 
-			if particle.Config.Bounce && dist < size {
+			if particle.Config.Bounce && dist < particle.Size*2 {
 				particle.Reverse()
 				particle2.Reverse()
 			}
 		}
 
-		particle.Bounds(float64(g.Width), float64(g.Height))
+		w, h := float64(g.Width), float64(g.Height)
+
+		if particle.Config.Bounds {
+			particle.Bounds(w, h)
+			continue
+		}
+
+		particle.Bounce(w, h)
 	}
 }

@@ -1,12 +1,19 @@
-// +build js,wasm
+// go:build js,wasm
 package main
 
 import (
 	pcanvas "github.com/mvrilo/go-particles/canvas"
+	"github.com/mvrilo/go-particles/particles"
 )
 
 func main() {
-	canvas := pcanvas.NewCanvas("particles", 60, "#FFF", 20)
+	// particle configuration
+	conf := particles.DefaultConfig
+	conf.Color = "#9999FF"
+	conf.Speed = 1.5
+
+	// canvas setup
+	canvas := pcanvas.NewCanvas("particles", 30, "#222", 40, conf)
 	go canvas.ListenEvents()
 	canvas.Fullscreen()
 	canvas.Start()

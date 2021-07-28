@@ -18,6 +18,7 @@ type Canvas struct {
 	height       int
 	background   string
 	maxparticles int
+	config       particles.Config
 
 	window js.Value
 	doc    js.Value
@@ -31,7 +32,7 @@ type Canvas struct {
 }
 
 // NewCanvas initializes a Canvas element
-func NewCanvas(id string, fps time.Duration, background string, maxparticles int) *Canvas {
+func NewCanvas(id string, fps time.Duration, background string, maxparticles int, particleConfig particles.Config) *Canvas {
 	win := js.Global()
 	doc := win.Get("document")
 	body := doc.Get("body")
@@ -44,6 +45,7 @@ func NewCanvas(id string, fps time.Duration, background string, maxparticles int
 		maxparticles: maxparticles,
 		body:         body,
 		canvas:       canvas,
+		config:       particleConfig,
 		ctx:          ctx,
 		doc:          doc,
 		window:       win,
@@ -53,7 +55,7 @@ func NewCanvas(id string, fps time.Duration, background string, maxparticles int
 }
 
 func (c *Canvas) Start() {
-	c.group = particles.NewGroup(c.width, c.height, c.maxparticles, particles.DefaultConfig)
+	c.group = particles.NewGroup(c.width, c.height, c.maxparticles, c.config)
 }
 
 // AppendElement append the canvas element to the body
@@ -61,14 +63,40 @@ func (c *Canvas) AppendElement() {
 	c.body.Call("appendChild", c.canvas)
 }
 
+// onMousemove sticks a particle to mouse movement
+func (c *Canvas) onMousemove(args []js.Value) {
+	event := args[0]
+	event.Call("preventDefault")
+
+	x := event.Get("offsetX").Float()
+	y := event.Get("offsetY").Float()
+
+	mouse := c.group.Particles[0]
+	if mouse.Config.Move {
+		mouse.Config.Move = false
+	}
+
+	mouse.Position = particles.Vector{x, y}
+}
+
+// onResize is a window resize event handler
+func (c *Canvas) onResize() {
+	c.Fullscreen()
+	c.Start()
+}
+
 // ListenEvents add events listener, such as: resize
 func (c *Canvas) ListenEvents() {
 	onresize := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		c.Fullscreen()
-		c.Start()
+		c.onResize()
+		return nil
+	})
+	onmousemove := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		c.onMousemove(args)
 		return nil
 	})
 	c.window.Call("addEventListener", "resize", onresize)
+	c.window.Call("addEventListener", "mousemove", onmousemove)
 }
 
 // Size sets a size for the canvas
