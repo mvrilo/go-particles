@@ -16,6 +16,10 @@ build: pre
 	go build -o particles-demo cmd/particles-demo/main.go
 
 static/particles.wasm: static/wasm_exec.js
+	# can't use tinygo yet, see:
+	# https://github.com/tinygo-org/tinygo/issues/1848
+	# https://github.com/tinygo-org/tinygo/issues/1979
+	# tinygo build -target wasm -o static/particles.wasm wasm/main.go
 	GOARCH=wasm GOOS=js go build -o static/particles.wasm wasm/main.go
 
 static/wasm_exec.js:
