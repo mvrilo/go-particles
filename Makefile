@@ -28,6 +28,7 @@ fmt:
 	go mod tidy
 	go fmt ./...
 	go vet ./particles ./cmd/...
+	GOARCH=wasm GOOS=js go vet ./canvas ./wasm
 
 pre: static/particles.wasm fmt
 
