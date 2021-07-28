@@ -1,13 +1,13 @@
 .PHONY: dev run build clean staticcheck fmt pre
 
-dev:
-	go run github.com/cespare/reflex -s -r '\.go$$' make clean pre run-dev
+run: build
+	./particles-demo
 
 run-dev: build-dev
 	./particles-demo-dev
 
-run: build
-	./particles-demo
+dev:
+	go run github.com/cespare/reflex -s -r '\.go$$' make clean pre run-dev
 
 build-dev: pre
 	go build -race -o particles-demo-dev cmd/particles-demo/main.go
@@ -22,13 +22,13 @@ static/wasm_exec.js:
 	cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js static/wasm_exec.js
 
 staticcheck:
-	go run honnef.co/go/tools/cmd/staticcheck ./particles/... ./cmd/...
+	go run honnef.co/go/tools/cmd/staticcheck ./particles ./cmd/...
 
 fmt:
-	go mod tidy
-	go fmt ./...
-	go vet ./particles ./cmd/...
-	GOARCH=wasm GOOS=js go vet ./canvas ./wasm
+	@go mod tidy
+	@go fmt ./...
+	@go vet ./particles ./cmd/...
+	@GOARCH=wasm GOOS=js go vet ./canvas ./wasm
 
 pre: static/particles.wasm fmt
 
