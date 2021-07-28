@@ -13,7 +13,7 @@ func main() {
 	conf.Speed = 1.5
 
 	// canvas setup
-	canvas := pcanvas.NewCanvas("particles", 30, "#222", 40, conf)
+	canvas := pcanvas.NewCanvas("particles", 80, "#222", 40, conf)
 	go canvas.ListenEvents()
 	canvas.Fullscreen()
 	canvas.Start()
